@@ -4,9 +4,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Degradable;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Optional;
 
@@ -20,8 +22,8 @@ public interface DegradableMixin {
     default Optional<BlockState> tryDegrade(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         final int RANGE = 4;
 
-        Degradable<?> obj = (Degradable<?>)((Object)this);
-        if (random.nextFloat() > obj.getDegradationChanceMultiplier()) {
+        Degradable<?> obj = (Degradable<?>) this;
+        if (random.nextFloat() > getDegradationChance(world, pos)) {
             return Optional.empty();
         }
 
@@ -60,5 +62,20 @@ public interface DegradableMixin {
         }
 
         return Optional.empty();
+    }
+
+    @Unique
+    default float getDegradationChance(ServerWorld world, BlockPos pos) {
+        int freeDirections = Direction.values().length;
+        for (Direction direction : Direction.values()) {
+            BlockPos testPos = pos.offset(direction);
+            BlockState testState = world.getBlockState(testPos);
+            boolean covered = testState.isSideSolidFullSquare(world, testPos, direction.getOpposite());
+            if (covered) {
+                freeDirections--;
+            }
+        }
+        return ((Degradable<?>)this).getDegradationChanceMultiplier()
+                * ((float) freeDirections / Direction.values().length);
     }
 }
