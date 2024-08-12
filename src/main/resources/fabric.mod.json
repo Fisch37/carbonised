@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "carbonised",
+  "version": "${version}",
+  "name": "Carbonised",
+  "description": "",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/carbonised/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [
+      "de.fisch37.carbonised.client.CarbonisedClient"
+    ],
+    "main": [
+      "de.fisch37.carbonised.Carbonised"
+    ]
+  },
+  "mixins": [
+    "carbonised.mixins.json",
+    {
+      "config": "carbonised.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
