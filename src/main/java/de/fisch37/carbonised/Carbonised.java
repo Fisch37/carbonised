@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 public class Carbonised implements ModInitializer {
     public static final Logger LOGGER = LoggerFactory.getLogger(Carbonised.class);
+    public static final String MOD_ID = "carbonised";
 
     @Override
     public void onInitialize() {

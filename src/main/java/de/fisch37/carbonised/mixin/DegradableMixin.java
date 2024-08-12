@@ -1,5 +1,6 @@
 package de.fisch37.carbonised.mixin;
 
+import de.fisch37.carbonised.TagHelper;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Degradable;
 import net.minecraft.server.world.ServerWorld;
@@ -69,6 +70,7 @@ public interface DegradableMixin {
     @Unique
     default float getDegradationChance(ServerWorld world, BlockPos pos) {
         int freeDirections = Direction.values().length;
+        int acceleration = 0;
         for (Direction direction : Direction.values()) {
             BlockPos testPos = pos.offset(direction);
             BlockState testState = world.getBlockState(testPos);
@@ -76,8 +78,12 @@ public interface DegradableMixin {
             if (covered) {
                 freeDirections--;
             }
+            else if (world.getFluidState(testPos).isIn(TagHelper.ACCELERATES_DEGRADATION)) {
+                // No acceleration if the block is water-opaque in that direction
+                acceleration++;
+            }
         }
         return ((Degradable<?>)this).getDegradationChanceMultiplier()
-                * ((float) freeDirections / Direction.values().length);
+                * ((float) (freeDirections + acceleration) / Direction.values().length);
     }
 }
