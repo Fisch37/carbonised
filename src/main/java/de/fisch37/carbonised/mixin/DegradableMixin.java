@@ -28,6 +28,12 @@ public interface DegradableMixin {
         BlockPos leastOxidized = pos;
         Enum<?> leastOxidizedLevel = obj.getDegradationLevel();
         for (BlockPos target : BlockPos.iterateOutwards(pos, RANGE, RANGE, RANGE)) {
+            // WARN & NOTE: Minecraft has a bug in BlockPos.iterateOutwards
+            //  The actual return value of the method is Iterable<BlockPos.Mutable>
+            //  This is not accounted for in the implementation leading to target
+            //  being modified across iterations.
+            //  This is a very obscure error and a lesson to everyone to respect immutability when typing a method
+            target = target.mutableCopy();
             int distance = target.getManhattanDistance(pos);
             if (distance > 4) continue;
 
