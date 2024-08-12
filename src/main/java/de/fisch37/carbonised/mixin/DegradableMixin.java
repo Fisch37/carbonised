@@ -12,6 +12,8 @@ import org.spongepowered.asm.mixin.Unique;
 
 import java.util.Optional;
 
+import static de.fisch37.carbonised.Carbonised.LOGGER;
+
 @Mixin(Degradable.class)
 public interface DegradableMixin {
     /**
@@ -52,13 +54,13 @@ public interface DegradableMixin {
         }
         // Updating here is a bit janky, but it is basically the only good way
         final BlockState oldState = world.getBlockState(leastOxidized);
-        if ((oldState.getBlock() instanceof Degradable<?>)) {
+        try {
             final Optional<BlockState> newState = ((Degradable<?>) oldState.getBlock())
                     .getDegradationResult(oldState);
             BlockPos finalLeastOxidized = leastOxidized;
             newState.ifPresent(updatedState -> world.setBlockState(finalLeastOxidized, updatedState));
-        } else {
-            System.err.println("Avoided CCE in DegradableMixin from Carbonised");
+        } catch (Exception e) {
+            LOGGER.error("Avoided a crash during degradation attempt!", e);
         }
 
         return Optional.empty();
