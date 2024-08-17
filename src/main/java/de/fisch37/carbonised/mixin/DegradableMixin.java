@@ -32,7 +32,7 @@ public interface DegradableMixin {
         MinOxidizationSearch search = new MinOxidizationSearch(
                 world,
                 pos,
-                (byte)Math.max(world.getGameRules().getInt(Carbonised.FLOOD_RADIUS),Byte.MAX_VALUE)
+                (byte)Math.min(world.getGameRules().getInt(Carbonised.FLOOD_RADIUS),Byte.MAX_VALUE)
         );
         BlockPos leastOxidized = search.aggregate().getLeft();
 
