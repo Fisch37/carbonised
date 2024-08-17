@@ -1,5 +1,6 @@
 package de.fisch37.carbonised.mixin;
 
+import de.fisch37.carbonised.Gamerules;
 import de.fisch37.carbonised.MinOxidizationSearch;
 import de.fisch37.carbonised.TagHelper;
 import net.minecraft.block.BlockState;
@@ -24,13 +25,15 @@ public interface DegradableMixin {
      */
     @Overwrite
     default Optional<BlockState> tryDegrade(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        final byte RANGE = 4;
-
         if (random.nextFloat() > getDegradationChance(world, pos)) {
             return Optional.empty();
         }
 
-        MinOxidizationSearch search = new MinOxidizationSearch(world, pos, RANGE);
+        MinOxidizationSearch search = new MinOxidizationSearch(
+                world,
+                pos,
+                (byte)Math.max(world.getGameRules().getInt(Gamerules.FLOOD_RADIUS),Byte.MAX_VALUE)
+        );
         BlockPos leastOxidized = search.aggregate().getLeft();
 
         // Updating here is a bit janky, but it is basically the only good way
