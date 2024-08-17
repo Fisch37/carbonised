@@ -13,7 +13,7 @@ public class Carbonised implements ModInitializer {
     public static final GameRules.Key<GameRules.IntRule> FLOOD_RADIUS = GameRuleRegistry.register(
             "oxidisationRadius",
             GameRules.Category.UPDATES,
-            GameRuleFactory.createIntRule(4)
+            GameRuleFactory.createIntRule(4, 0, 127)
     );
 
     @Override

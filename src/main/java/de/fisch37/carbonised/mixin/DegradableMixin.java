@@ -29,12 +29,19 @@ public interface DegradableMixin {
             return Optional.empty();
         }
 
-        MinOxidizationSearch search = new MinOxidizationSearch(
-                world,
-                pos,
-                (byte)Math.min(world.getGameRules().getInt(Carbonised.FLOOD_RADIUS),Byte.MAX_VALUE)
-        );
-        BlockPos leastOxidized = search.aggregate().getLeft();
+        final byte radius = (byte)world.getGameRules().getInt(Carbonised.FLOOD_RADIUS);
+        final BlockPos leastOxidized;
+        if (radius > 0) {
+            MinOxidizationSearch search = new MinOxidizationSearch(
+                    world,
+                    pos,
+                    radius
+            );
+            leastOxidized = search.aggregate().getLeft();
+        } else {
+            // Gamerule 0 -> ignore batching
+            leastOxidized = pos;
+        }
 
         // Updating here is a bit janky, but it is basically the only good way
         final BlockState oldState = world.getBlockState(leastOxidized);
