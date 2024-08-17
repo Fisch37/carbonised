@@ -19,7 +19,10 @@ public class MinOxidizationSearch extends FloodAggregate<Pair<BlockPos, Enum<?>>
         this.center = getDegradation(center).orElseThrow(() -> new IllegalStateException("Degradation center was non-degradable"));
     }
 
-    // TODO: Redundant block state call
+    // NOTE: Redundant block state call
+    //  This is a small performance loss buuut it doesn't really matter.
+    //  This mod doesn't have any performance issues and besides:
+    //  Minecraft stores blocks in a hash map. That's decently fast
     @Override
     protected boolean filter(BlockPos pos) {
         return world.getBlockState(pos).getBlock() instanceof Degradable<?>;
