@@ -25,6 +25,16 @@ public interface DegradableMixin {
      */
     @Overwrite
     default Optional<BlockState> tryDegrade(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        try {
+            return tryDegradeExec(state, world, pos, random);
+        } catch (Exception e) {
+            LOGGER.error("Avoided a crash during degradation attempt!", e);
+            return Optional.empty();
+        }
+    }
+
+    @Unique
+    default Optional<BlockState> tryDegradeExec(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         if (random.nextFloat() > getDegradationChance(world, pos)) {
             return Optional.empty();
         }
@@ -45,13 +55,9 @@ public interface DegradableMixin {
 
         // Updating here is a bit janky, but it is basically the only good way
         final BlockState oldState = world.getBlockState(leastOxidized);
-        try {
-            final Optional<BlockState> newState = ((Degradable<?>) oldState.getBlock())
-                    .getDegradationResult(oldState);
-            newState.ifPresent(updatedState -> world.setBlockState(leastOxidized, updatedState));
-        } catch (Exception e) {
-            LOGGER.error("Avoided a crash during degradation attempt!", e);
-        }
+        final Optional<BlockState> newState = ((Degradable<?>) oldState.getBlock())
+                .getDegradationResult(oldState);
+        newState.ifPresent(updatedState -> world.setBlockState(leastOxidized, updatedState));
 
         return Optional.empty();
     }
