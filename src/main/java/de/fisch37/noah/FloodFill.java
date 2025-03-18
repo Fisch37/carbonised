@@ -99,7 +99,7 @@ public abstract class FloodFill {
 
             Node child = get(childPos);
             if (child == null) {
-                child = new Node(node.isDead() || filter(childGlobal));
+                child = new Node(node.isDead() || !filter(childGlobal));
                 set(childPos, child);
                 sources.add(childPos);
             } else if (child.isDead()) {
