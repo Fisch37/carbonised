@@ -129,6 +129,14 @@ public abstract class FloodFill {
             children[getInverse(dirIndex)] = null;
         }
 
+        // I considered adding diagonals to fix some odd behaviour with trapdoors.
+        // Here's why I didn't: in theory checking a cube instead of a diamond shape tests against twice as many blocks.
+        // However, the shell of a 3x3x3 diamond is 8 blocks (ergo 8 directions).
+        // The shell of a 3x3x3 cube is 26 blocks. 26 directions looped for every Node.
+        // This means performance as of right now would be <em>much</em> worse.
+        // My machine can handle it, but weaker devices might not.
+        // There might be a possible optimisation with the Noah algorithm such that we avoid revisiting blocks.
+        // If this is indeed possible, diagonals may be viable.
         private final static Vec3i[] CHILD_DIRECTIONS = new Vec3i[]{
                 new Vec3i(1,0,0),
                 new Vec3i(-1,0,0),
